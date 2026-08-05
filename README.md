@@ -1,3 +1,11 @@
+Forked from [xuzhengyi1995/Manga_downloader](https://github.com/xuzhengyi1995/Manga_downloader)
+
+# What's Changed
+ - **Added [comic boost](comic-boost.com) support.**
+ - Fixed cmoa actions' hardcoding strip overlaps. 
+ - The dummy error stemmed from `undetected_chromedriver` when quitting a driver is now slienced.
+
+# Original
 # NEW METHOD FOR BW TO TRY!
 
 # New Version
@@ -148,34 +156,28 @@ All the settings are in `main.py`.
 ```python
 settings = {
     # Manga urls, should be the same website
-    'manga_url': [
-        'URL_1',
-        'URL_2'
-    ],
+    "manga_url": ["URL_1", "URL_2"],
     # Your cookies
-    'cookies': 'YOUR_COOKIES_HERE',
+    "cookies": "YOUR_COOKIES_HERE",
     # Folder names to store the Manga, the same order with manga_url
-    'imgdir': [
-        'IMGDIR_FOR_URL_1',
-        'IMGDIR_FOR_URL_2'
-    ],
+    "imgdir": ["IMGDIR_FOR_URL_1", "IMGDIR_FOR_URL_2"],
     # Resolution, (Width, Height), For cmoa.jp this doesn't matter.
-    'res': (1393, 2048),
+    "res": (1393, 2048),
     # Sleep time for each page (Second), normally no need to change.
-    'sleep_time': 2,
+    "sleep_time": 2,
     # Time wait for page loading (Second), if your network is good, you can reduce this parameter.
-    'loading_wait_time': 20,
+    "loading_wait_time": 20,
     # Cut image, (left, upper, right, lower) in pixel, None means do not cut the image. This often used to cut the edge.
     # Like (0, 0, 0, 3) means cut 3 pixel from bottom of the image.
-    'cut_image': None,
+    "cut_image": None,
     # File name prefix, if you want your file name like 'klk_v1_001.jpg', write 'klk_v1' here.
-    'file_name_prefix': '',
+    "file_name_prefix": "",
     # File name digits count, if you want your file name like '001.jpg', write 3 here.
-    'number_of_digits': 3,
+    "number_of_digits": 3,
     # Start page, if you want to download from page 3, set this to 3, None means from 0
-    'start_page': None,
+    "start_page": None,
     # End page, if you want to download until page 10, set this to 10, None means until finished
-    'end_page': None,
+    "end_page": None,
 }
 ```
 
@@ -366,62 +368,67 @@ settings = {
 
     ```python
     class BookwalkerJP(WebsiteActions):
-        '''
+        """
         bookwalker.jp
-        '''
+        """
 
         # login_url is the page that we load first and put the cookies.
-        login_url = 'https://member.bookwalker.jp/app/03/login'
+        login_url = "https://member.bookwalker.jp/app/03/login"
 
         @staticmethod
         def check_url(manga_url):
-            '''
+            """
             This method return a bool, check if the given manga url is belong to this class.
-            '''
-            return manga_url.find('bookwalker.jp') != -1
+            """
+            return manga_url.find("bookwalker.jp") != -1
 
         def get_sum_page_count(self, driver):
-            '''
+            """
             This method return an integer, get total page number.
-            '''
-            return int(str(driver.find_element_by_id('pageSliderCounter').text).split('/')[1])
+            """
+            return int(
+                str(driver.find_element_by_id("pageSliderCounter").text).split("/")[1]
+            )
 
         def move_to_page(self, driver, page):
-            '''
+            """
             This method return nothing, move to given page number.
-            '''
-            driver.execute_script(
-                'NFBR.a6G.Initializer.B0U.menu.a6l.moveToPage(%d)' % page)
+            """
+            driver.execute_script("NFBR.a6G.Initializer.B0U.menu.a6l.moveToPage(%d)" % page)
 
         def wait_loading(self, driver):
-            '''
+            """
             This method return nothing, wait manga loading.
-            '''
-            WebDriverWait(driver, 30).until_not(lambda x: self.check_is_loading(
-                x.find_elements_by_css_selector(".loading")))
+            """
+            WebDriverWait(driver, 30).until_not(
+                lambda x: self.check_is_loading(x.find_elements_by_css_selector(".loading"))
+            )
 
         def get_imgdata(self, driver, now_page):
-            '''
+            """
             This method return String/something can be written to file or convert to BytesIO, get image data.
-            '''
+            """
             canvas = driver.find_element_by_css_selector(".currentScreen canvas")
             img_base64 = driver.execute_script(
-                "return arguments[0].toDataURL('image/jpeg').substring(22);", canvas)
+                "return arguments[0].toDataURL('image/jpeg').substring(22);", canvas
+            )
             return base64.b64decode(img_base64)
 
         def get_now_page(self, driver):
-            '''
+            """
             This method return an integer, the page number on the current page
-            '''
-            return int(str(driver.find_element_by_id('pageSliderCounter').text).split('/')[0])
+            """
+            return int(
+                str(driver.find_element_by_id("pageSliderCounter").text).split("/")[0]
+            )
     ```
 
       We also have a `before_download` method, this method run before we start download, because some website need to close some pop-up component before we start downloading.
 
     ```python
     def before_download(self, driver):
-        '''
+        """
         This method return nothing, Run before download.
-        '''
-        driver.execute_script('parent.closeTips()')
+        """
+        driver.execute_script("parent.closeTips()")
     ```
