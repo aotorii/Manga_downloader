@@ -2,6 +2,8 @@
 Main file
 """
 
+import argparse
+
 from downloader import Downloader
 
 try:
@@ -35,6 +37,15 @@ except ImportError:
         "end_page": None,
     }
 
-if __name__ == "__main__":
-    downloader = Downloader(**settings)
+parser = argparse.ArgumentParser()
+parser.add_argument("--guest", action="store_true")
+
+
+def main():
+    args = parser.parse_args()
+    downloader = Downloader(**settings, guest=args.guest)
     downloader.download()
+
+
+if __name__ == "__main__":
+    main()

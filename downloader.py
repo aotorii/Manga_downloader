@@ -61,6 +61,7 @@ class Downloader:
         number_of_digits=3,
         start_page=None,
         end_page=None,
+        guest=None,
     ):
         self.manga_url = manga_url
         self.cookies = get_cookie_dict(cookies)
@@ -77,6 +78,7 @@ class Downloader:
         self.start_page = start_page - 1 if start_page and start_page > 0 else 0
         self.end_page = end_page
         self.image_box = None
+        self.guest = guest
 
         self.init_function()
 
@@ -223,7 +225,7 @@ class Downloader:
                 err_source.write(driver.page_source)
             driver.save_screenshot("./error.png")
             logging.error(
-                "Something wrong or download finished,Please check the error.png to see the web page.\r\nNormally, you should logout and login, then renew the cookies to solve this problem."
+                "Something wrong or download finished, please check the error.png to see the web page.\nNormally, you should logout and login, then renew the cookies to solve this problem."
             )
             logging.error(err)
             self.image_box = None
@@ -242,14 +244,16 @@ class Downloader:
         total_manga = len(self.manga_url)
         total_dir = len(self.imgdir)
         if total_manga != total_dir:
-            logging.error("Total manga urls given not equal to imgdir.")
+            logging.error(
+                "Please make sure the numbers of given manga urls and imgdirs match."
+            )
             return
 
         for i in range(total_manga):
             t_manga_url = self.manga_url[i]
             t_img_dir = self.imgdir[i]
             self.check_implementation(t_manga_url)
-            if i == 0:
+            if i == 0 and not self.guest:
                 self.login()
             logging.info("Starting download manga %d, imgdir: %s", i + 1, t_img_dir)
             self.prepare_download(t_img_dir, t_manga_url)
