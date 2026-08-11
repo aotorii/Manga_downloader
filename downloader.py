@@ -112,34 +112,43 @@ class Downloader:
         option.add_argument(
             "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
         )
-        option.add_argument("--app=%s" % self.str_to_data_uri("Manga_downloader"))
-        option.add_argument("--headless")
+        option.add_argument("--headless=new")
         self.driver = uc.Chrome(options=option)
-        self.driver.set_window_size(self.res[0], self.res[1])
+
+        self.driver.execute_cdp_cmd(
+            "Emulation.setDeviceMetricsOverride",
+            {
+                "width": self.res[0],
+                "height": self.res[1],
+                "deviceScaleFactor": 1,
+                "mobile": False,
+            },
+        )
         viewport_dimensions = self.driver.execute_script(
             "return [window.innerWidth, window.innerHeight];"
         )
         logging.info("Viewport dimensions %s", viewport_dimensions)
+
         self.driver.execute_cdp_cmd(
             "Page.addScriptToEvaluateOnNewDocument",
             {
                 "source": """
-              Object.defineProperty(navigator, 'webdriver', {
+            Object.defineProperty(navigator, 'webdriver', {
                 get: () => false
-              })
-              window.navigator.chrome = undefined;
-              Object.defineProperty(navigator, 'languages', {
+            })
+            window.navigator.chrome = undefined;
+            Object.defineProperty(navigator, 'languages', {
                 get: () => ['en-US', 'en'],
-              });
-              Object.defineProperty(navigator, 'plugins', {
+            });
+            Object.defineProperty(navigator, 'plugins', {
                 get: () => [1, 2, 3, 4, 5],
-              });
-              const originalQuery = window.navigator.permissions.query;
-              window.navigator.permissions.query = (parameters) => (
+            });
+            const originalQuery = window.navigator.permissions.query;
+            window.navigator.permissions.query = (parameters) => (
                 parameters.name === 'notifications' ?
                 Promise.resolve({ state: Notification.permission }) :
                 originalQuery(parameters)
-              );
+            );
             """
             },
         )

@@ -3,7 +3,8 @@ Forked from [xuzhengyi1995/Manga_downloader](https://github.com/xuzhengyi1995/Ma
 # What's Changed
  - **Added [comic boost](comic-boost.com) support.**
  - **Use `--guest` to skip login if you don't have to in the first place.**
- - Fixed cmoa actions' hardcoding strip overlaps. 
+ - Fixed viewport setting.
+ - Fixed cmoa actions' hardcoding strip overlaps.
  - The dummy error stemmed from `undetected_chromedriver` when quitting a driver is now slienced.
 
 # Original

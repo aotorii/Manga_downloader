@@ -61,7 +61,15 @@ class ComicBoost(WebsiteActions):
         time.sleep(1)
 
     def set_window(self, driver, width, height):
-        driver.set_window_size(width, height)
+        driver.execute_cdp_cmd(
+            "Emulation.setDeviceMetricsOverride",
+            {
+                "width": width,
+                "height": height,
+                "deviceScaleFactor": 1,
+                "mobile": False,
+            },
+        )
         WebDriverWait(driver, 10).until(
             lambda d: (
                 d.execute_script(
